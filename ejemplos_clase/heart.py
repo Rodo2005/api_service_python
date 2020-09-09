@@ -77,7 +77,8 @@ def report(limit=0, offset=0, dict_format=False):
     query = 'SELECT h_order.time, h_order.name, h_order.value as last_heartrate, \
              COUNT(name) as records \
              FROM (SELECT time, name, value FROM heartrate ORDER BY time) as h_order \
-             GROUP BY name ORDER BY time'
+             GROUP BY name'
+             # ORDER BY time'
 
     if limit > 0:
         query += ' LIMIT {}'.format(limit)

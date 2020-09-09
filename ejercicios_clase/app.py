@@ -100,10 +100,12 @@ def personas():
 def comparativa():
     try:
         # Mostrar todos los registros en formato tabla
-        result = '''<h3>Implementar una función en persona.py
-                    nationality_review</h3>'''
-        result += '''<h3>Esa funcion debe devolver los datos que necesite
-                    para implementar el grafico a mostrar</h3>'''
+        #result = '''<h3>Implementar una función en persona.py
+                    #nationality_review</h3>'''
+        #result += '''<h3>Esa funcion debe devolver los datos que necesite
+                    #para implementar el grafico a mostrar</h3>'''
+                    
+        result = show('table')
         return (result)
     except:
         return jsonify({'trace': traceback.format_exc()})
@@ -116,9 +118,59 @@ def registro():
         # name = ...
         # age = ...
         # nationality = ...
-        
-        # persona.insert(name, int(age), nationality)
+        name = str(request.form.get('name'))
+        pulsos = str(request.form.get('heartrate'))
+        age = str(request.form.get('age'))
+        nationality = str(request.form.get('nationality'))
+        if(name is None or age is None or age.isdigit() is False or pulsos is None or pulsos.isdigit() is False or nationality is None):
+            return Response(status=404)
+        persona.insert(name, int(age), nationality)
         return Response(status=200)
+
+
+def show(show_type='json'):
+
+    # Obtener de la query string los valores de limit y offset
+    limit_str = str(request.args.get('limit'))
+    offset_str = str(request.args.get('offset'))
+
+    limit = 0
+    offset = 0
+
+    if(limit_str is not None) and (limit_str.isdigit()):
+        limit = int(limit_str)
+
+    if(offset_str is not None) and (offset_str.isdigit()):
+        offset = int(offset_str)
+
+    if show_type == 'json':
+        data = persona.report(limit=limit, offset=offset, dict_format=True)
+        return jsonify(data)
+    elif show_type == 'table':
+        data = persona.nationality_report(limit=limit, offset=offset)
+        return html_table(data)
+    else:
+        data = persona.report(limit=limit, offset=offset, dict_format=True)
+        return jsonify(data)
+
+
+def html_table(data):
+    result = '<table border="1">'
+    result += '<thead cellpadding="1.0" cellspacing="1.0">'
+    result += '<tr>'
+    result += '<th>Nacionalidad</th>'
+    result += '<th>Nº de registrados</th>'
+    result += '</tr>'
+    for row in data:
+        result += '<tr>'
+        result += '<td>' + str(row[0]) + '</td>'
+        result += '<td>' + str(row[1]) + '</td>'
+        result += '</tr>'
+    result += '</thead cellpadding="0" cellspacing="0" >'
+    result += '</table>'
+    return result
+    
+        
     
 
 if __name__ == '__main__':

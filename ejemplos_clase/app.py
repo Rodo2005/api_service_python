@@ -135,6 +135,7 @@ def registro():
         # Obtener del HTTP POST JSON el nombre y los pulsos
         nombre = str(request.form.get('name'))
         pulsos = str(request.form.get('heartrate'))
+        print(nombre, pulsos)
 
         if(nombre is None or pulsos is None or pulsos.isdigit() is False):
             # Datos ingresados incorrectos
